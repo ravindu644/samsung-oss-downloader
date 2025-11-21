@@ -37,8 +37,18 @@ function loadCapturedData() {
             return;
         }
         
-        const { cookie, payload, timestamp } = result.lastRequest;
+        const { cookie, payload, headers, timestamp } = result.lastRequest;
         const timeAgo = timestamp ? `Captured ${Math.floor((Date.now() - timestamp) / 1000)}s ago` : '';
+        
+        // Format headers for display
+        let headersDisplay = '';
+        if (headers && Object.keys(headers).length > 0) {
+            headersDisplay = Object.entries(headers)
+                .map(([key, value]) => `<div style="margin: 2px 0;"><strong>${escapeHtml(key)}</strong>: ${escapeHtml(String(value))}</div>`)
+                .join('');
+        } else {
+            headersDisplay = '<div style="color: #999; font-style: italic;">No headers captured (empty object)</div>';
+        }
         
         contentEl.innerHTML = `
             <div class="data-section">
@@ -58,6 +68,16 @@ function loadCapturedData() {
             </div>
             
             <div class="data-section">
+                <label>Request Headers <span style="font-size: 10px; color: #666;">(${headers ? Object.keys(headers).length : 0} headers)</span></label>
+                <div class="data-value" style="max-height: 200px; overflow-y: auto; font-size: 11px; line-height: 1.4;">
+                    ${headersDisplay}
+                </div>
+                <div class="button-group">
+                    <button id="copyHeaders" class="secondary">📋 Copy Headers JSON</button>
+                </div>
+            </div>
+            
+            <div class="data-section">
                 <label>Quick Actions</label>
                 <div class="button-group">
                     <button id="copyBoth" class="secondary">📋 Copy Both</button>
@@ -70,6 +90,7 @@ function loadCapturedData() {
                 <div style="font-size: 10px; color: #666; padding: 5px;">
                     Payload length: ${payload.length} chars<br>
                     Cookie count: ${cookie.split(';').length} cookies<br>
+                    Headers count: ${headers ? Object.keys(headers).length : 0}<br>
                     ${timeAgo}
                 </div>
             </div>
@@ -84,15 +105,25 @@ function loadCapturedData() {
             copyToClipboard(payload, 'POST Data');
         });
         
+        const copyHeadersBtn = document.getElementById('copyHeaders');
+        if (copyHeadersBtn) {
+            copyHeadersBtn.addEventListener('click', () => {
+                const headersJson = JSON.stringify(headers || {}, null, 2);
+                copyToClipboard(headersJson, 'Headers JSON');
+            });
+        }
+        
         document.getElementById('copyBoth').addEventListener('click', () => {
             const both = `Cookie: ${cookie}\n\nPOST Data: ${payload}`;
             copyToClipboard(both, 'Cookie and POST Data');
         });
         
         document.getElementById('copyForDlSh').addEventListener('click', () => {
-            // Create base64 encoded string with cookie and payload
-            // Format: COOKIE: <cookie>\nPAYLOAD: <payload>
-            const dataString = `COOKIE: ${cookie}\nPAYLOAD: ${payload}`;
+            // Create base64 encoded string with cookie, payload, and headers
+            // Format: COOKIE: <cookie>\nPAYLOAD: <payload>\nHEADERS: <json_headers>
+            const headers = result.lastRequest.headers || {};
+            const headersJson = JSON.stringify(headers);
+            const dataString = `COOKIE: ${cookie}\nPAYLOAD: ${payload}\nHEADERS: ${headersJson}`;
             // Encode to base64 using btoa (works for ASCII/UTF-8)
             const base64Data = btoa(unescape(encodeURIComponent(dataString)));
             copyToClipboard(base64Data, 'Base64 data for ./dl.sh');
