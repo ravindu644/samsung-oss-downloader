@@ -55,11 +55,10 @@ echo "Payload: Loaded"
 echo "Saving:  $FILENAME"
 echo "--------------------------------------"
 
-# Run curl with Resume (-C -) support (simple version that works)
-echo "Starting download... (Resume supported)"
-echo "If this stops, just run the script again with the same data."
+# Run curl download
+echo "Starting download..."
 echo ""
-curl -C - --retry 10 --retry-delay 5 \
+curl --retry 10 --retry-delay 5 \
      -X POST "https://opensource.samsung.com/downSrcCode" \
      -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
      -H "Content-Type: application/x-www-form-urlencoded" \
