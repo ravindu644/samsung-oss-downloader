@@ -1,12 +1,32 @@
-## How to install
+# Samsung OSS Downloader
 
-**Requirements:** Chromium-based browser (Brave, Chrome, etc), Linux environment with `curl` installed.
+A Chrome extension and bash script to automate downloading source code from Samsung's Open Source website.
 
-> Tested with: `Brave 1.83.120 (Official Build) (64-bit)`
+<details>
+<summary>📸 Screenshots (Click to expand)</summary>
 
-1. Download the extension ZIP from [Github releases](https://github.com/ravindu644/samsung-oss-downloader/releases) and extract it somewhere.
-2. Go to your Chromium-based browser’s extensions page and enable developer options.
-3. Select “Load Unpacked” and choose the path to the extracted ZIP to install the extension.
-4. Go to https://opensource.samsung.com, search for anything, solve the CAPTCHA, and press the download button.
-5. After you press the download button, the extension will automatically capture the details in Base64.
-6. Run `dl.sh` to start the download: `./dl.sh <BASE64_VALUE>`
+![Extension Popup](Screenshots/1.png)
+![Download Script](Screenshots/2.png)
+
+</details>
+
+## Requirements
+
+- Chromium-based browser (Chrome, Brave)
+- Linux with `curl` installed
+- `jq` or `python3` (for header parsing)
+
+## Installation
+
+1. Download the extension from [releases](https://github.com/ravindu644/samsung-oss-downloader/releases) and extract it
+2. Go to your browser's extension page
+3. Enable **Developer mode** and click **"Load unpacked"**
+4. Select the extracted extension folder
+5. Make `dl.sh` executable: `chmod +x dl.sh`
+
+## Usage
+
+1. Go to https://opensource.samsung.com and search for source code
+2. Select the source code, solve the CAPTCHA, and press the download button. (You can cancel the download once the request is captured)
+3. Open the extension popup and click **"📦 Copy for ./dl.sh"**
+4. Run: `./dl.sh "PASTE_BASE64_HERE" [filename]`
